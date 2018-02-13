@@ -53,40 +53,79 @@ class Shop():
 
     def update_quality(self):
         for item in self.items:
-            # Update Quality
-            if item.name != 'Aged Brie' and item.name != 'Backstage passes to a TAFKAL80ETC concert':
-                if (item.quality > 0):
-                    if (item.name != 'Sulfuras, Hand of Ragnaros'):
-                        item.quality = item.quality - 1
+            if item.name == 'Backstage passes to a TAFKAL80ETC concert':
+                self.update_concert(item)
+            elif item.name == 'Sulfuras, Hand of Ragnaros':
+                self.update_sulfuras(item)
+            elif item.name == 'Aged Brie':
+                self.update_brie(item)
             else:
-                if (item.quality < 50):
-                    item.quality = item.quality + 1
-                    if (item.name == 'Backstage passes to a TAFKAL80ETC concert'):
-                        if (item.sellIn < 11):
-                            if (item.quality < 50):
-                                item.quality = item.quality + 1
-                        if (item.sellIn < 6):
-                            if (item.quality < 50):
-                                item.quality = item.quality + 1
-
-            if (item.name != 'Sulfuras, Hand of Ragnaros'):
-                item.sellIn = item.sellIn - 1
+                self.update_others(item)
 
 
-            if (item.sellIn < 0):
-                if (item.name != 'Aged Brie'):
-                    if (item.name != 'Backstage passes to a TAFKAL80ETC concert'):
-                        if (item.quality > 0):
-                            if (item.name != 'Sulfuras, Hand of Ragnaros'):
-                                item.quality = item.quality - 1
-                    else:
-                        item.quality = item.quality - item.quality
-                else:
-                    if (item.quality < 50):
-                        item.quality = item.quality + 1
+            # if (item.name != 'Sulfuras, Hand of Ragnaros'):
+            #     item.sellIn = item.sellIn - 1
+
+            # # Update Quality
+            # if item.name != 'Aged Brie' and item.name != 'Backstage passes to a TAFKAL80ETC concert':
+            #      if (item.quality > 0):
+            #         if (item.name != 'Sulfuras, Hand of Ragnaros'):
+            #             item.quality = item.quality - 1
+            # else:
+            #     if (item.quality < 50):
+            #         item.quality = item.quality + 1
+            #         if (item.name == 'Backstage passes to a TAFKAL80ETC concert'):
+            #             if (item.sellIn < 11):
+            #                 if (item.quality < 50):
+            #                     item.quality = item.quality + 1
+            #             if (item.sellIn < 6):
+            #                 if (item.quality < 50):
+            #                     item.quality = item.quality + 1                
+            
+            # if (item.sellIn < 0):
+            #     if (item.name == 'Aged Brie'):
+            #         if (item.quality < 50):
+            #             item.quality = item.quality + 1
+            #     else:
+            #         if (item.name == 'Backstage passes to a TAFKAL80ETC concert'):
+            #             item.quality = item.quality - item.quality
+            #         else:
+            #             if (item.quality > 0):
+            #                 if (item.name != 'Sulfuras, Hand of Ragnaros'):
+            #                     item.quality = item.quality - 1
 
         return self.items
 
+    def update_others(self, item):
+        item.sellIn -= 1
+        if (item.quality > 0):
+            item.quality = item.quality - 1
+            if (item.sellIn < 0):
+                item.quality = item.quality - 1
+
+    def update_brie(self, item):
+        item.sellIn -= 1
+        if (item.quality < 50):
+            item.quality += 1
+        if (item.sellIn < 0) and (item.quality < 50):
+            item.quality += 1
+
+    def update_sulfuras(self, item):
+        sit_on_my_ass = True
+    
+    def update_concert(self, item):
+        item.sellIn -= 1
+        if (item.quality < 50):
+            item.quality = item.quality + 1
+            if (item.sellIn < 11):
+                if (item.quality < 50):
+                    item.quality = item.quality + 1
+            if (item.sellIn < 6):
+                if (item.quality < 50):
+                    item.quality = item.quality + 1
+        if (item.sellIn < 0):
+            item.quality = 0
+    
     def print_items(self):
         for item in self.items:
             print(item.to_string())
@@ -101,9 +140,9 @@ def test():
     test_brie()
     test_sulfuras()
     test_concert()
+    test_rando()
     
 def test_brie():
-     # Basic
     shop = Shop([Item('Aged Brie', 100, 100)])
     shop.update_quality()
     assert(shop.items[0].sellIn == 99)
@@ -171,6 +210,30 @@ def test_concert():
     # shop.print_items()
     assert(shop.items[0].sellIn == 0)
     assert(shop.items[0].quality == 20+1+1+1)
+
+    # Increase when it gets close to the concert
+    shop = Shop([Item('Backstage passes to a TAFKAL80ETC concert', 0, 20)])
+    shop.update_quality()
+    # shop.print_items()
+    assert(shop.items[0].sellIn == -1)
+    assert(shop.items[0].quality == 0)
+
+def test_rando():
+    shop = Shop([Item('Foobar', 100, 100)])
+    shop.update_quality()
+    # shop.print_items()
+    assert(shop.items[0].sellIn == 99)
+    assert(shop.items[0].quality == 99)
+    shop = Shop([Item('Foobar', 0, 100)])
+    shop.update_quality()
+    # shop.print_items()
+    assert(shop.items[0].sellIn == -1)
+    assert(shop.items[0].quality == 100-1-1)
+    shop = Shop([Item('Foobar', 50, 50)])
+    shop.update_quality()
+    # shop.print_items()
+    assert(shop.items[0].sellIn == 49)
+    assert(shop.items[0].quality == 50-1)
     
     
 main()
