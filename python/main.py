@@ -53,8 +53,6 @@ class Shop():
 
     def update_quality(self):
         for item in self.items:
-
-
             # Update Quality
             if item.name != 'Aged Brie' and item.name != 'Backstage passes to a TAFKAL80ETC concert':
                 if (item.quality > 0):
@@ -70,11 +68,11 @@ class Shop():
                         if (item.sellIn < 6):
                             if (item.quality < 50):
                                 item.quality = item.quality + 1
-                                
+
             if (item.name != 'Sulfuras, Hand of Ragnaros'):
                 item.sellIn = item.sellIn - 1
 
-                
+
             if (item.sellIn < 0):
                 if (item.name != 'Aged Brie'):
                     if (item.name != 'Backstage passes to a TAFKAL80ETC concert'):
@@ -99,4 +97,83 @@ def main():
     shop.update_quality()
     shop.print_items()
 
+def test():
+    test_brie()
+    test_sulfuras()
+    test_concert()
+    
+def test_brie():
+     # Basic
+    shop = Shop([Item('Aged Brie', 100, 100)])
+    shop.update_quality()
+    assert(shop.items[0].sellIn == 99)
+    assert(shop.items[0].quality == 100)
+    shop.update_quality()
+    assert(shop.items[0].sellIn == 98)
+    assert(shop.items[0].quality == 100)
+    # Aged brie doesnt decrease in quality
+    shop = Shop([Item('Aged Brie', 100, 100)])
+    for i in range(105):
+        shop.update_quality() 
+        assert(shop.items[0].sellIn == 100-i-1)
+        assert(shop.items[0].quality == 100)
+    
+    shop = Shop([Item('Aged Brie', 0, 25)])
+    shop.update_quality()
+    # shop.print_items()
+    assert(shop.items[0].sellIn == -1)
+    assert(shop.items[0].quality == 25+1+1)
+
+def test_sulfuras():
+    shop = Shop([Item('Sulfuras, Hand of Ragnaros', 100, 100)])
+    shop.update_quality()
+    # shop.print_items()
+    assert(shop.items[0].sellIn == 100)
+    assert(shop.items[0].quality == 100)
+
+    shop = Shop([Item('Sulfuras, Hand of Ragnaros', 0, 100)])
+    shop.update_quality()
+    # shop.print_items()
+    assert(shop.items[0].sellIn == 0)
+    assert(shop.items[0].quality == 100)
+
+    shop = Shop([Item('Sulfuras, Hand of Ragnaros', 5, 25)])
+    shop.update_quality()
+    # shop.print_items()
+    assert(shop.items[0].sellIn == 5)
+    assert(shop.items[0].quality == 25)
+
+
+def test_concert():
+    shop = Shop([Item('Backstage passes to a TAFKAL80ETC concert', 100, 100)])
+    shop.update_quality()
+    # shop.print_items()
+    assert(shop.items[0].sellIn == 99)
+    assert(shop.items[0].quality == 100)
+
+    # Increase when low quality
+    shop = Shop([Item('Backstage passes to a TAFKAL80ETC concert', 100, 20)])
+    shop.update_quality()
+    # shop.print_items()
+    assert(shop.items[0].sellIn == 99)
+    assert(shop.items[0].quality == 20+1)
+
+    # Increase when it gets close to the concert
+    shop = Shop([Item('Backstage passes to a TAFKAL80ETC concert', 5, 20)])
+    shop.update_quality()
+    # shop.print_items()
+    assert(shop.items[0].sellIn == 4)
+    assert(shop.items[0].quality == 20+1+1+1)
+
+    # Increase when it gets close to the concert
+    shop = Shop([Item('Backstage passes to a TAFKAL80ETC concert', 1, 20)])
+    shop.update_quality()
+    # shop.print_items()
+    assert(shop.items[0].sellIn == 0)
+    assert(shop.items[0].quality == 20+1+1+1)
+    
+    
 main()
+print("Testing...")
+test()
+print("SUCCESS!")

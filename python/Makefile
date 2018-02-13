@@ -10,6 +10,11 @@ push:
 run:
 	@bash -x scripts/run.sh
 
+## Run project
+test:
+	@bash -x scripts/test.sh
+
+
 help:
 	@printf "Available targets:\n\n"
 	@awk '/^[a-zA-Z\-\_0-9%:\\]+:/ { \
