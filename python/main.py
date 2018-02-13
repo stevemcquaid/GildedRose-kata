@@ -59,40 +59,10 @@ class Shop():
                 self.update_sulfuras(item)
             elif item.name == 'Aged Brie':
                 self.update_brie(item)
+            elif item.name =='Conjured':
+                self.update_conjured(item)
             else:
                 self.update_others(item)
-
-
-            # if (item.name != 'Sulfuras, Hand of Ragnaros'):
-            #     item.sellIn = item.sellIn - 1
-
-            # # Update Quality
-            # if item.name != 'Aged Brie' and item.name != 'Backstage passes to a TAFKAL80ETC concert':
-            #      if (item.quality > 0):
-            #         if (item.name != 'Sulfuras, Hand of Ragnaros'):
-            #             item.quality = item.quality - 1
-            # else:
-            #     if (item.quality < 50):
-            #         item.quality = item.quality + 1
-            #         if (item.name == 'Backstage passes to a TAFKAL80ETC concert'):
-            #             if (item.sellIn < 11):
-            #                 if (item.quality < 50):
-            #                     item.quality = item.quality + 1
-            #             if (item.sellIn < 6):
-            #                 if (item.quality < 50):
-            #                     item.quality = item.quality + 1                
-            
-            # if (item.sellIn < 0):
-            #     if (item.name == 'Aged Brie'):
-            #         if (item.quality < 50):
-            #             item.quality = item.quality + 1
-            #     else:
-            #         if (item.name == 'Backstage passes to a TAFKAL80ETC concert'):
-            #             item.quality = item.quality - item.quality
-            #         else:
-            #             if (item.quality > 0):
-            #                 if (item.name != 'Sulfuras, Hand of Ragnaros'):
-            #                     item.quality = item.quality - 1
 
         return self.items
 
@@ -102,6 +72,13 @@ class Shop():
             item.quality = item.quality - 1
             if (item.sellIn < 0):
                 item.quality = item.quality - 1
+
+    def update_conjured(self, item):
+        item.sellIn -= 1
+        if (item.quality > 0):
+            item.quality = item.quality - 2
+            if (item.sellIn < 0):
+                item.quality = item.quality - 2
 
     def update_brie(self, item):
         item.sellIn -= 1
@@ -140,15 +117,16 @@ def test():
     test_brie()
     test_sulfuras()
     test_concert()
+    test_conjured()
     test_rando()
     
 def test_brie():
     shop = Shop([Item('Aged Brie', 100, 100)])
     shop.update_quality()
-    assert(shop.items[0].sellIn == 99)
+    assert(shop.items[0].sellIn == 100-1)
     assert(shop.items[0].quality == 100)
     shop.update_quality()
-    assert(shop.items[0].sellIn == 98)
+    assert(shop.items[0].sellIn == 100-2)
     assert(shop.items[0].quality == 100)
     # Aged brie doesnt decrease in quality
     shop = Shop([Item('Aged Brie', 100, 100)])
@@ -187,14 +165,14 @@ def test_concert():
     shop = Shop([Item('Backstage passes to a TAFKAL80ETC concert', 100, 100)])
     shop.update_quality()
     # shop.print_items()
-    assert(shop.items[0].sellIn == 99)
+    assert(shop.items[0].sellIn == 100-1)
     assert(shop.items[0].quality == 100)
 
     # Increase when low quality
     shop = Shop([Item('Backstage passes to a TAFKAL80ETC concert', 100, 20)])
     shop.update_quality()
     # shop.print_items()
-    assert(shop.items[0].sellIn == 99)
+    assert(shop.items[0].sellIn == 100-1)
     assert(shop.items[0].quality == 20+1)
 
     # Increase when it gets close to the concert
@@ -217,6 +195,23 @@ def test_concert():
     # shop.print_items()
     assert(shop.items[0].sellIn == -1)
     assert(shop.items[0].quality == 0)
+
+def test_conjured():
+    shop = Shop([Item('Conjured', 100, 100)])
+    shop.update_quality()
+    # shop.print_items()
+    assert(shop.items[0].sellIn == 100-1)
+    assert(shop.items[0].quality == 100-2)
+    shop = Shop([Item('Conjured', 0, 100)])
+    shop.update_quality()
+    # shop.print_items()
+    assert(shop.items[0].sellIn == -1)
+    assert(shop.items[0].quality == 100-2-2)
+    shop = Shop([Item('Conjured', 50, 50)])
+    shop.update_quality()
+    # shop.print_items()
+    assert(shop.items[0].sellIn == 49)
+    assert(shop.items[0].quality == 50-2)
 
 def test_rando():
     shop = Shop([Item('Foobar', 100, 100)])
