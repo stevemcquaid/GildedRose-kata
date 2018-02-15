@@ -64,3 +64,13 @@ class Shop {
 const shop = new Shop([ new Item('Aged Brie', 100, 100) ])
 shop.updateQuality();
 console.log(shop.items);
+
+const shop = new Shop([ new Item('Aged Brie', 0, 75) ])
+shop.updateQuality();
+console.log(shop.items);
+shop.updateQuality();
+console.log(shop.items);
+shop.updateQuality();
+console.log(shop.items);
+shop.updateQuality();
+console.log(shop.items);
